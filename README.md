@@ -1,33 +1,51 @@
-# Patient-Provider Matching System
+# Anise Health - Culturally-Informed Mental Healthcare Matching Platform
 
-A secure, HIPAA-compliant system for matching patients with mental health providers based on preferences, specializations, and availability.
+## Project Overview
 
-## Table of Contents
+Anise Health is a specialized healthcare platform focused on connecting Asian and Asian American patients with culturally competent mental health providers. The platform employs an intelligent matching algorithm that considers cultural nuances, language preferences, and specific mental health needs within the Asian community.
 
-- [Quick Start](#quick-start)
-- [System Architecture](#system-architecture)
-- [Security & Compliance](#security--compliance)
-- [Enterprise Scaling](#enterprise-scaling)
-- [Development](#development)
+## Current Implementation (MVP)
 
-## Quick Start
+### Core Features
+
+1. **Provider Matching System**
+
+   - Cultural and language preference matching
+   - Specialization and expertise matching
+   - Basic availability filtering
+   - CSV-based provider data storage
+
+2. **Technical Stack**
+
+   - Frontend: Angular 19 SPA with TypeScript
+   - Backend: Spring Boot 3.2.1
+   - RESTful API architecture
+   - In-memory provider matching algorithm
+
+3. **Basic Functionality**
+   - Patient preference submission
+   - Provider matching based on criteria
+   - Match results display
+   - Simple provider profiles
+
+## Local Development Setup
 
 ### Prerequisites
 
-- Java 17 or higher
-- Node.js 18 or higher
-- Maven
-- Angular CLI
+- Java 17 (required by Spring Boot 3.2.1)
+- Node.js 18 (as used in CI/CD)
+- Angular CLI 19.0.6
+- Maven 3.9.9
 
 ### Backend Setup
 
 ```bash
 cd backend
-./mvnw clean install
-./mvnw spring-boot:run
+mvn clean install
+mvn spring-boot:run
 ```
 
-The backend will start on `https://localhost:8443`
+The backend service will start on `http://localhost:8080`
 
 ### Frontend Setup
 
@@ -37,208 +55,117 @@ npm install
 npm start
 ```
 
-The application will be available at `http://localhost:4200`
+The frontend application will be available at `http://localhost:4200`
 
-## System Architecture
+## Documentation
 
-### Current Implementation
+For detailed information about specific components, please refer to the documentation folder:
 
-The system consists of two main components:
+- [Frontend Documentation](documentation/frontend.md)
 
-1. **Frontend (Angular 17)**
+  - Component structure
+  - State management
+  - UI/UX implementation
 
-   - Reactive forms for patient preferences
-   - Material UI components
-   - State management for provider results
-   - Real-time form validation
-   - Responsive design
+- [Backend Documentation](documentation/backend.md)
 
-2. **Backend (Spring Boot)**
-   - RESTful API endpoints
-   - Provider matching algorithm
-   - HTTPS/SSL encryption
-   - CORS configuration
-   - Error handling
+  - API endpoints
+  - Matching algorithm details
+  - Data processing
 
-### Data Flow
+- [Matching Criteria Documentation](documentation/matching-criteria.md)
+  - Detailed matching logic
+  - Cultural considerations
+  - Provider-patient compatibility scoring
 
-1. Patient submits preferences through the form
-2. Frontend validates and sends request to backend
-3. Backend processes matching algorithm
-4. Matched providers returned to frontend
-5. Results displayed in provider list
+## Future Roadmap
 
-## Security & Compliance
+### 1. HIPAA Compliance Implementation Plan
 
-### HIPAA Compliance Implementation
+#### Security Infrastructure
 
-1. **Web Application Firewall (WAF)**
+- Implement Web Application Firewall (WAF)
+- Set up DDoS protection
+- Configure rate limiting
+- Implement IP whitelisting
 
-   - Protection against OWASP Top 10 threats
-   - DDoS protection
-   - Rate limiting
-   - IP whitelisting
-   - Request validation
-   - SQL injection prevention
+#### Data Protection
 
-2. **Encryption**
+- Enable TLS 1.3 for data in transit
+- Implement AES-256 encryption for data at rest
+- Set up secure key management system
+- Plan PHI data handling procedures
 
-   - TLS 1.3 for data in transit
-   - AES-256 encryption for data at rest
-   - Key rotation policies
-   - Secure key storage using AWS KMS
-   - End-to-end encryption for PHI
+#### Access Control
 
-3. **Access Control**
+- Implement Role-Based Access Control (RBAC)
+- Add JWT-based authentication
+- Enable Multi-factor authentication
+- Design audit logging system
 
-   - Role-Based Access Control (RBAC)
-   - JWT-based authentication
-   - Session management
-   - Multi-factor authentication
-   - Principle of least privilege
+### 2. Scaling Strategy
 
-4. **Audit Logging**
+#### Infrastructure Evolution
 
-   - Comprehensive audit trails
-   - Access logging
-   - Change tracking
-   - Error logging
-   - Security event monitoring
-   - Tamper-evident logs
+- Migrate to cloud infrastructure (AWS/GCP)
+- Implement containerization with Kubernetes
+- Set up auto-scaling policies
+- Add load balancing
+- Plan geographic distribution
 
-5. **Key Management**
-   - Hardware Security Modules (HSM)
-   - Automated key rotation
-   - Secure key distribution
-   - Access control to keys
-   - Key usage auditing
+#### Database Migration
 
-### Security Architecture
+- Move from CSV to PostgreSQL
+- Design efficient schema for matching
+- Implement data sharding strategy
+- Add Redis caching layer
 
-```
-[Client] ─── [WAF] ─── [API Gateway]
-                            │
-                    [Identity Provider]
-                            │
-                    [Service Mesh]
-                            │
-               [Encryption Service (KMS)]
-                            │
-                [Data Access Layer]
-```
+#### Architecture Improvements
 
-## Enterprise Scaling
+- Break down into microservices
+- Implement service discovery
+- Add API gateway
+- Set up message queues for async operations
 
-### High-Availability Architecture
+### 3. Monitoring and Reliability
 
-```
-                                     [Load Balancer]
-                                           │
-                    ┌──────────────┬──────┴───────┬──────────────┐
-                    │              │              │              │
-            [API Gateway]    [API Gateway]  [API Gateway]  [API Gateway]
-                    │              │              │              │
-        ┌───────────┼──────────────┼──────────────┼───────────┐
-        │           │              │              │           │
-   [Auth Service] [Matching]  [Provider]    [Patient]    [Analytics]
-        │           │              │              │           │
-        └─────────┐ │              │              │ ┌─────────┘
-                  │ │              │              │ │
-                [Message Queue / Event Bus (Kafka)]
-                           │              │
-                    [Cache Layer]   [Search Engine]
-                           │              │
-                    [Primary DB]    [Analytics DB]
-```
+#### Observability
 
-### Scalability Features
+- Set up ELK stack for logging
+- Implement Prometheus/Grafana for metrics
+- Add distributed tracing
+- Create performance dashboards
 
-1. **Infrastructure**
+#### Performance Optimization
 
-   - Containerization with Kubernetes
-   - Auto-scaling policies
-   - Load balancing
-   - Geographic distribution
-   - CDN integration
+- Implement caching strategy
+- Optimize matching algorithm
+- Add CDN for static assets
+- Set up database indexing
 
-2. **Performance**
+### 4. Feature Enhancements
 
-   - Redis caching
-   - Connection pooling
-   - Request batching
-   - Async processing
-   - Response optimization
+#### Provider Management
 
-3. **Monitoring**
-   - Application metrics
-   - Performance monitoring
-   - Error tracking
-   - User analytics
-   - Resource utilization
+- Real-time availability calendar
+- Provider onboarding workflow
+- Credential verification system
+- Performance analytics
 
-## Development
+#### Patient Experience
 
-### Code Organization
+- Appointment scheduling
+- Secure messaging system
+- Video consultation platform
+- Feedback and rating system
 
-```
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/
-│   │   │   ├── services/
-│   │   │   └── models/
-│   │   └── assets/
-│   └── package.json
-│
-└── backend/
-    ├── src/
-    │   └── main/
-    │       ├── java/
-    │       │   └── com/
-    │       │       └── anisehealth/
-    │       │           └── matching/
-    │       └── resources/
-    └── pom.xml
-```
+#### Analytics
 
-### Adding New Features
+- Match success metrics
+- User behavior analytics
+- Provider performance tracking
+- Business intelligence dashboards
 
-1. Follow security-first approach
-2. Implement proper error handling
-3. Add comprehensive logging
-4. Include unit tests
-5. Update documentation
+---
 
-### Testing
-
-1. **Unit Tests**
-
-   ```bash
-   # Backend
-   ./mvnw test
-
-   # Frontend
-   npm run test
-   ```
-
-2. **Security Testing**
-   - Regular penetration testing
-   - Vulnerability scanning
-   - Security code review
-   - Compliance auditing
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Commit changes
-4. Create pull request
-5. Await code review
-
-## License
-
-This project is proprietary and confidential.
-
-## Support
-
-For technical support or questions about HIPAA compliance, contact the development team.
+Note: This README represents our MVP state and outlines our vision for scaling the platform. Many features mentioned in the roadmap are planned for future implementation to ensure HIPAA compliance and system scalability.
