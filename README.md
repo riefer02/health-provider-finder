@@ -17,8 +17,8 @@ Anise Health is a specialized healthcare platform focused on connecting Asian an
 
 2. **Technical Stack**
 
-   - Frontend: Angular 15+ SPA with TypeScript
-   - Backend: Spring Boot Java application
+   - Frontend: Angular 19 SPA with TypeScript
+   - Backend: Spring Boot 3.2.1
    - RESTful API architecture
    - In-memory provider matching algorithm
 
@@ -32,10 +32,10 @@ Anise Health is a specialized healthcare platform focused on connecting Asian an
 
 ### Prerequisites
 
-- Java 17+
-- Node.js 16+
-- Angular CLI 15+
-- Maven 3.8+
+- Java 17 (required by Spring Boot 3.2.1)
+- Node.js 18 (as used in CI/CD)
+- Angular CLI 19.0.6
+- Maven 3.9.9
 
 ### Backend Setup
 
@@ -165,23 +165,6 @@ For detailed information about specific components, please refer to the document
 - User behavior analytics
 - Provider performance tracking
 - Business intelligence dashboards
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request with:
-   - Detailed description of changes
-   - Test coverage
-   - Documentation updates
-
-## License
-
-This project is proprietary and confidential.
-
-## Contact
-
-For technical questions or collaboration opportunities, please contact [Your Contact Information].
 
 ---
 
