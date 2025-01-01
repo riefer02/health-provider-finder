@@ -73,39 +73,47 @@ public class ProviderMatchingService {
     }
 
     private boolean matchesLocation(Provider provider, String requestedLocation) {
-        return provider.getLocation() != null &&
-               provider.getLocation().toLowerCase().contains(requestedLocation.toLowerCase());
+        if (requestedLocation == null || provider.getLocation() == null) return false;
+        return provider.getLocation().toLowerCase().contains(requestedLocation.toLowerCase());
     }
 
     private boolean matchesAreasOfConcern(Provider provider, List<String> requestedAreas) {
-        if (requestedAreas == null || requestedAreas.isEmpty()) return true;
-        return provider.getSpecializationAreas().stream()
-            .anyMatch(area -> requestedAreas.stream()
-                .anyMatch(requested -> area.toLowerCase().contains(requested.toLowerCase())));
+        if (requestedAreas == null || requestedAreas.isEmpty() || provider.getSpecializationAreas() == null) return false;
+        return requestedAreas.stream()
+            .anyMatch(requested -> provider.getSpecializationAreas().stream()
+                .anyMatch(area -> area.equalsIgnoreCase(requested)));
     }
 
     private boolean matchesTreatmentModality(Provider provider, List<String> requestedModalities) {
-        if (requestedModalities == null || requestedModalities.isEmpty()) return true;
-        return provider.getTreatmentModalities().stream()
-            .anyMatch(modality -> requestedModalities.stream()
-                .anyMatch(requested -> modality.toLowerCase().contains(requested.toLowerCase())));
+        if (requestedModalities == null || requestedModalities.isEmpty() || provider.getTreatmentModalities() == null) return false;
+        return requestedModalities.stream()
+            .anyMatch(requested -> provider.getTreatmentModalities().stream()
+                .anyMatch(modality -> modality.equalsIgnoreCase(requested)));
     }
 
     private boolean matchesTherapistPreferences(Provider provider, PatientRequest.TherapistPreferences preferences) {
         if (preferences == null) return true;
 
         boolean matchesGender = !StringUtils.hasText(preferences.getPreferredGender()) ||
-            provider.getGenderIdentity().toLowerCase().contains(preferences.getPreferredGender().toLowerCase());
+            "Any".equalsIgnoreCase(preferences.getPreferredGender()) ||
+            (provider.getGenderIdentity() != null &&
+            provider.getGenderIdentity().equalsIgnoreCase(preferences.getPreferredGender()));
 
         boolean matchesEthnicity = !StringUtils.hasText(preferences.getPreferredEthnicity()) ||
-            provider.getEthnicIdentity().toLowerCase().contains(preferences.getPreferredEthnicity().toLowerCase());
+            "Any".equalsIgnoreCase(preferences.getPreferredEthnicity()) ||
+            (provider.getEthnicIdentity() != null &&
+            provider.getEthnicIdentity().equalsIgnoreCase(preferences.getPreferredEthnicity()));
 
         boolean matchesReligion = !StringUtils.hasText(preferences.getPreferredReligion()) ||
-            provider.getReligiousBackground().toLowerCase().contains(preferences.getPreferredReligion().toLowerCase());
+            "Any".equalsIgnoreCase(preferences.getPreferredReligion()) ||
+            (provider.getReligiousBackground() != null &&
+            provider.getReligiousBackground().equalsIgnoreCase(preferences.getPreferredReligion()));
 
         boolean matchesLanguage = !StringUtils.hasText(preferences.getPreferredLanguage()) ||
+            "Any".equalsIgnoreCase(preferences.getPreferredLanguage()) ||
+            (provider.getLanguages() != null &&
             provider.getLanguages().stream()
-                .anyMatch(lang -> lang.toLowerCase().contains(preferences.getPreferredLanguage().toLowerCase()));
+                .anyMatch(lang -> lang.equalsIgnoreCase(preferences.getPreferredLanguage())));
 
         return matchesGender && matchesEthnicity && matchesReligion && matchesLanguage;
     }
