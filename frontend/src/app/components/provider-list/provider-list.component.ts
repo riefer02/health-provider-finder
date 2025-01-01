@@ -29,14 +29,16 @@ import { ProviderStateService } from '../../services/provider-state.service';
     <div class="error-container">
       <p>{{ error }}</p>
     </div>
-    } @else {
+    } @else if (providers.length === 0) {
     <div class="provider-list">
-      @if (providers.length === 0) {
       <p class="no-results">
         No matching providers found. Please try adjusting your preferences.
       </p>
-      } @for (provider of providers; track provider.firstName +
-      provider.lastName) {
+    </div>
+    } @else {
+    <div class="provider-list">
+      @for (provider of providers; track provider.firstName + provider.lastName)
+      {
       <mat-card class="provider-card">
         <mat-card-header>
           <mat-card-title>

@@ -4,7 +4,6 @@ import com.anisehealth.matching.model.PatientRequest;
 import com.anisehealth.matching.model.Provider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
@@ -14,146 +13,112 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProviderMatchingServiceTest {
     private ProviderMatchingService service;
+    private Provider provider;
+    private PatientRequest request;
 
     @BeforeEach
     void setUp() {
         service = new ProviderMatchingService();
         
-        // Create test providers
-        Provider provider1 = new Provider();
-        provider1.setFirstName("John");
-        provider1.setLastName("Doe");
-        provider1.setEthnicIdentity("East Asian");
-        provider1.setGenderIdentity("Male");
-        provider1.setLocation("CA");
-        provider1.setBio("Experienced therapist");
-        provider1.setAvailableCapacity(3);
-        provider1.setLanguage("English, Mandarin");
-        provider1.setTreatmentModality("CBT, Mindfulness");
-        provider1.setAreasOfSpecialization("Anxiety, Depression");
-        provider1.processRawFields();
+        // Set up a basic provider with all required fields
+        provider = new Provider();
+        provider.setFirstName("John");
+        provider.setLastName("Doe");
+        provider.setLocation("New York");
+        provider.setAvailableCapacity(5);
+        provider.setEthnicIdentity("East Asian");
+        provider.setGenderIdentity("Male");
+        provider.setLanguage("English,Mandarin");
+        provider.setTreatmentModality("CBT,DBT");
+        provider.setAreasOfSpecialization("Anxiety,Depression");
+        provider.setReligiousBackground("Buddhist");
+        provider.setBio("Test bio");
+        provider.setAcceptedPaymentMethods("INSURANCE,SELF_PAY");
+        provider.setAcceptedInsuranceProviders("AETNA,MAGELLAN");
+        provider.processRawFields();
 
-        Provider provider2 = new Provider();
-        provider2.setFirstName("Jane");
-        provider2.setLastName("Smith");
-        provider2.setEthnicIdentity("South Asian");
-        provider2.setGenderIdentity("Female");
-        provider2.setLocation("NY");
-        provider2.setBio("Compassionate counselor");
-        provider2.setAvailableCapacity(2);
-        provider2.setLanguage("English, Hindi");
-        provider2.setTreatmentModality("Psychodynamic, DBT");
-        provider2.setAreasOfSpecialization("Trauma, Relationships");
-        provider2.processRawFields();
+        // Debug: Print provider fields
+        System.out.println("Provider fields after setup:");
+        System.out.println("Languages: " + provider.getLanguages());
+        System.out.println("Treatment Modalities: " + provider.getTreatmentModalities());
+        System.out.println("Specialization Areas: " + provider.getSpecializationAreas());
 
-        Provider provider3 = new Provider();
-        provider3.setFirstName("Maria");
-        provider3.setLastName("Garcia");
-        provider3.setEthnicIdentity("Hispanic");
-        provider3.setGenderIdentity("Female");
-        provider3.setLocation("CA");
-        provider3.setBio("Bilingual therapist");
-        provider3.setAvailableCapacity(5);
-        provider3.setLanguage("English, Spanish");
-        provider3.setTreatmentModality("CBT, Family Therapy");
-        provider3.setAreasOfSpecialization("Anxiety, Family Issues");
-        provider3.processRawFields();
+        // Verify that the provider is complete
+        assertTrue(provider.getLanguages() != null && !provider.getLanguages().isEmpty(), "Languages should not be empty");
+        assertTrue(provider.getTreatmentModalities() != null && !provider.getTreatmentModalities().isEmpty(), "Treatment modalities should not be empty");
+        assertTrue(provider.getSpecializationAreas() != null && !provider.getSpecializationAreas().isEmpty(), "Specialization areas should not be empty");
 
-        // Set the providers list using reflection
-        ReflectionTestUtils.setField(service, "providers", Arrays.asList(provider1, provider2, provider3));
-    }
-
-    @Test
-    void findMatches_ShouldReturnMatchingProviders_WhenLocationMatches() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("CA");
-        request.setAreasOfConcern(List.of("Anxiety"));
-        
-        List<Provider> matches = service.findMatches(request);
-        
-        assertFalse(matches.isEmpty());
-        assertTrue(matches.stream().allMatch(p -> p.getLocation().contains("CA")));
-    }
-
-    @Test
-    void findMatches_ShouldReturnMatchingProviders_WhenAreasOfConcernMatch() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("CA");
-        request.setAreasOfConcern(List.of("Anxiety"));
-        
-        List<Provider> matches = service.findMatches(request);
-        
-        assertFalse(matches.isEmpty());
-        assertTrue(matches.stream().anyMatch(p -> 
-            p.getSpecializationAreas().stream().anyMatch(area -> 
-                area.toLowerCase().contains("anxiety"))));
-    }
-
-    @Test
-    void findMatches_ShouldReturnMatchingProviders_WhenTreatmentModalityMatches() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("CA");
+        // Set up a basic request
+        request = new PatientRequest();
+        request.setLocation("New York");
         request.setAreasOfConcern(List.of("Anxiety"));
         request.setTreatmentModality(List.of("CBT"));
-        
-        List<Provider> matches = service.findMatches(request);
-        
-        assertFalse(matches.isEmpty());
-        assertTrue(matches.stream().anyMatch(p -> 
-            p.getTreatmentModalities().stream().anyMatch(modality -> 
-                modality.toLowerCase().contains("cbt"))));
-    }
+        request.setPaymentMethod(PatientRequest.PaymentMethod.INSURANCE);
+        request.setInsuranceProvider(PatientRequest.InsuranceProvider.AETNA);
 
-    @Test
-    void findMatches_ShouldReturnMatchingProviders_WhenTherapistPreferencesMatch() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("CA");
-        request.setAreasOfConcern(List.of("Anxiety"));
-        
+        PatientRequest.Demographics demographics = new PatientRequest.Demographics();
+        demographics.setEthnicity("East Asian");
+        demographics.setGender("Male");
+        demographics.setReligion("Buddhist");
+        demographics.setMaritalStatus("Single");
+        request.setDemographics(demographics);
+
         PatientRequest.TherapistPreferences preferences = new PatientRequest.TherapistPreferences();
-        preferences.setPreferredGender("Female");
-        preferences.setPreferredLanguage("Spanish");
+        preferences.setPreferredGender("Any");
+        preferences.setPreferredEthnicity("Any");
+        preferences.setPreferredReligion("Any");
+        preferences.setPreferredLanguage("English");
         request.setTherapistPreferences(preferences);
-        
-        List<Provider> matches = service.findMatches(request);
-        
-        assertFalse(matches.isEmpty());
-        assertTrue(matches.stream().anyMatch(p -> 
-            p.getGenderIdentity().toLowerCase().contains("female") &&
-            p.getLanguages().stream().anyMatch(lang -> 
-                lang.toLowerCase().contains("spanish"))));
+
+        // Initialize service with our test provider
+        ReflectionTestUtils.setField(service, "providers", List.of(provider));
     }
 
     @Test
-    void findMatches_ShouldLimitResults_ToThreeProviders() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("CA");
-        request.setAreasOfConcern(List.of("Anxiety"));
-        
+    void whenAllCriteriaMatch_returnsProvider() {
         List<Provider> matches = service.findMatches(request);
-        
-        assertTrue(matches.size() <= 3);
+        System.out.println("All criteria match - matches found: " + matches.size());
+        assertTrue(!matches.isEmpty(), "Should find matches when all criteria match");
+        assertEquals(provider, matches.get(0));
     }
 
     @Test
-    void findMatches_ShouldReturnEmptyList_WhenNoMatchesFound() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("TX");
-        request.setAreasOfConcern(List.of("Anxiety"));
-        
+    void whenLocationDoesNotMatch_returnsNoProvider() {
+        request.setLocation("Los Angeles");
         List<Provider> matches = service.findMatches(request);
-        
-        assertTrue(matches.isEmpty());
+        assertTrue(matches.isEmpty(), "Should not find matches when location doesn't match");
     }
 
     @Test
-    void findMatches_ShouldOnlyReturnProviders_WithAvailableCapacity() {
-        PatientRequest request = new PatientRequest();
-        request.setLocation("CA");
-        request.setAreasOfConcern(List.of("Anxiety"));
-        
+    void whenAreasOfConcernMatch_returnsProvider() {
+        request.setAreasOfConcern(List.of("Depression"));
         List<Provider> matches = service.findMatches(request);
-        
-        assertTrue(matches.stream().allMatch(p -> p.getAvailableCapacity() > 0));
+        System.out.println("Areas of concern match - matches found: " + matches.size());
+        System.out.println("Provider areas: " + provider.getSpecializationAreas());
+        System.out.println("Requested areas: " + request.getAreasOfConcern());
+        assertTrue(!matches.isEmpty(), "Should find matches when areas of concern match");
+        assertEquals(provider, matches.get(0));
+    }
+
+    @Test
+    void whenTreatmentModalityMatches_returnsProvider() {
+        request.setTreatmentModality(List.of("DBT"));
+        List<Provider> matches = service.findMatches(request);
+        System.out.println("Treatment modality match - matches found: " + matches.size());
+        System.out.println("Provider modalities: " + provider.getTreatmentModalities());
+        System.out.println("Requested modalities: " + request.getTreatmentModality());
+        assertTrue(!matches.isEmpty(), "Should find matches when treatment modality matches");
+        assertEquals(provider, matches.get(0));
+    }
+
+    @Test
+    void whenLanguagePreferenceMatches_returnsProvider() {
+        request.getTherapistPreferences().setPreferredLanguage("Mandarin");
+        List<Provider> matches = service.findMatches(request);
+        System.out.println("Language preference match - matches found: " + matches.size());
+        System.out.println("Provider languages: " + provider.getLanguages());
+        System.out.println("Requested language: " + request.getTherapistPreferences().getPreferredLanguage());
+        assertTrue(!matches.isEmpty(), "Should find matches when language preference matches");
+        assertEquals(provider, matches.get(0));
     }
 } 

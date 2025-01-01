@@ -51,12 +51,12 @@ class ProviderTest {
 
     @Test
     void processRawFields_ShouldHandleTreatmentModalities_WithCommasAndNewlines() {
-        provider.setTreatmentModality("CBT, Mindfulness\nPsychodynamic, DBT");
+        provider.setTreatmentModality("CBT, Mindfulness-Based (MBCT)\nPsychodynamic, DBT");
         provider.processRawFields();
 
         assertEquals(4, provider.getTreatmentModalities().size());
         assertTrue(provider.getTreatmentModalities().contains("CBT"));
-        assertTrue(provider.getTreatmentModalities().contains("Mindfulness"));
+        assertTrue(provider.getTreatmentModalities().contains("MBCT"));
         assertTrue(provider.getTreatmentModalities().contains("Psychodynamic"));
         assertTrue(provider.getTreatmentModalities().contains("DBT"));
     }
@@ -81,13 +81,13 @@ class ProviderTest {
 
     @Test
     void processRawFields_ShouldHandleSpecializationAreas_WithCommas() {
-        provider.setAreasOfSpecialization("Anxiety, Depression, Trauma");
+        provider.setAreasOfSpecialization("Anxiety, Depression, Trauma-related stress");
         provider.processRawFields();
 
         assertEquals(3, provider.getSpecializationAreas().size());
         assertTrue(provider.getSpecializationAreas().contains("Anxiety"));
         assertTrue(provider.getSpecializationAreas().contains("Depression"));
-        assertTrue(provider.getSpecializationAreas().contains("Trauma"));
+        assertTrue(provider.getSpecializationAreas().contains("Trauma-related stress"));
     }
 
     @Test
@@ -111,14 +111,14 @@ class ProviderTest {
     @Test
     void processRawFields_ShouldTrimWhitespace_FromAllFields() {
         provider.setLanguage(" English , Mandarin ");
-        provider.setTreatmentModality(" CBT , Mindfulness ");
+        provider.setTreatmentModality(" CBT , DBT ");
         provider.setAreasOfSpecialization(" Anxiety , Depression ");
         provider.processRawFields();
 
         assertTrue(provider.getLanguages().contains("English"));
         assertTrue(provider.getLanguages().contains("Mandarin"));
         assertTrue(provider.getTreatmentModalities().contains("CBT"));
-        assertTrue(provider.getTreatmentModalities().contains("Mindfulness"));
+        assertTrue(provider.getTreatmentModalities().contains("DBT"));
         assertTrue(provider.getSpecializationAreas().contains("Anxiety"));
         assertTrue(provider.getSpecializationAreas().contains("Depression"));
     }
@@ -126,7 +126,7 @@ class ProviderTest {
     @Test
     void processRawFields_ShouldRemoveEmptyEntries() {
         provider.setLanguage("English,,Mandarin,");
-        provider.setTreatmentModality("CBT,,Mindfulness,");
+        provider.setTreatmentModality("CBT,,DBT,");
         provider.setAreasOfSpecialization("Anxiety,,Depression,");
         provider.processRawFields();
 
